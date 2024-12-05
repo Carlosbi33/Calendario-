@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>De: Carlos Barrera Para: Janneth 💖</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #000000, #003366);
+            color: #fff;
+            margin: 0;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 20px;
+            background-color: #000;
+            color: #66ccff;
+            font-size: 18px;
+            border-bottom: 2px solid #66ccff;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        /* Formulario de contraseña */
+        .login-box {
+            margin: 20px auto;
+            padding: 20px;
+            background: #111;
+            border-radius: 10px;
+            max-width: 300px;
+            box-shadow: 0 0 15px rgba(102, 204, 255, 0.2);
+        }
+
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+        }
+
+        .login-box button {
+            background-color: #66ccff;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .login-box button:hover {
+            background-color: #3399ff;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Calendario */
+        .calendar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .day {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            background: #002244;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .day.locked {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        .day:hover:not(.locked) {
+            transform: scale(1.1);
+        }
+
+        .day span {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Ventana emergente */
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #001122;
+            color: #66ccff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 80%;
+            max-width: 400px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .popup h3 {
+            margin-top: 0;
+        }
+
+        .popup .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #66ccff;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        /* Fondo oscuro al abrir popup */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+            display: none;
+        }
+
+        /* Animación de corazones triangulares */
+        .heart {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid #66ccff;
+            animation: float 5s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-300px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>De: Carlos Barrera</h1>
+        <h2>Para: Janneth mi niñaa 💖</h2>
+    </header>
+
+    <!-- Login -->
+    <div id="login" class="login-box">
+        <h3>Pista: Nuestro apodo</h3>
+        <input type="password" id="password" placeholder="Ingresa la contraseña">
+        <button onclick="togglePassword()">Mostrar/Ocultar</button>
+        <button onclick="checkPassword()">Ingresar</button>
+    </div>
+
+    <!-- Contenido bloqueado -->
+    <div id="content" class="container hidden">
+        <h2>Calendario de amor 💙</h2>
+        <div class="calendar" id="calendar"></div>
+    </div>
+
+    <!-- Popup -->
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup">
+        <button class="close-btn" onclick="closePopup()">X</button>
+        <h3 id="popup-title"></h3>
+        <p id="popup-quote"></p>
+    </div>
+
+    <!-- Corazones -->
+    <div id="hearts"></div>
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const loginBox = document.getElementById('login');
+        const contentBox = document.getElementById('content');
+        const calendar = document.getElementById('calendar');
+        const overlay = document.getElementById('overlay');
+        const popup = document.getElementById('popup');
+        const popupTitle = document.getElementById('popup-title');
+        const popupQuote = document.getElementById('popup-quote');
+        const correctPassword = "janlos";
+
+        // Frases del calendario
+        const quotes = [
+            "Hoy es un buen día para amar y ser amado.",
+            "Eres el sol que ilumina mi día.",
+            "Contigo todo es mejor.",
+            "Mi felicidad empieza contigo.",
+            "El amor no es perfecto, pero tú lo haces hermoso.",
+            "Te amo más de lo que puedo expresar."
+        ];
+
+        // Mostrar/Ocultar contraseña
+        function togglePassword() {
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+        }
+
+        // Validar contraseña
+        function checkPassword() {
+            if (passwordInput.value === correctPassword) {
+                loginBox.classList.add('hidden');
+                contentBox.classList.remove('hidden');
+                loadCalendar();
+                startHearts();
+            } else {
+                alert("Contraseña incorrecta");
+            }
+        }
+
+        // Cargar calendario
+        function loadCalendar() {
+            const today = new Date();
+            const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const endDate = new Date(today.getFullYear(), 11, 23); // 23 de diciembre
+
+            for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+                const day = document.createElement('div');
+                const dayNumber = date.getDate();
+                const isUnlocked = date <= today;
+
+                day.classList.add('day');
+                if (!isUnlocked) day.classList.add('locked');
+                day.innerHTML = `<span>${dayNumber}</span>`;
+                day.onclick = () => {
+                    if (isUnlocked) {
+                        showPopup(dayNumber, quotes[dayNumber % quotes.length]);
+                    }
+                };
+
+                calendar.appendChild(day);
+            }
+        }
+
+        // Mostrar popup
+        function showPopup(day, quote) {
+            popupTitle.textContent = `Día ${day}`;
+            popupQuote.textContent = quote;
+            overlay.style.display = 'block';
+            popup.style.display = 'block';
+        }
+
+        // Cerrar popup
+        function closePopup() {
+            overlay.style.display = 'none';
+            popup.style.display = 'none';
+        }
+
+        // Animar corazones triangulares
+        function startHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = Math.random() * window.innerWidth + 'px';
+                hearts.appendChild(heart);
+
+                setTimeout(() => heart.remove(), 5000);
+            }, 500);
+        }
+    </script>
+</body>
+</html>
